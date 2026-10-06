@@ -268,4 +268,4 @@ Admis en Master Cybersécurité — ESGI Bordeaux (rentrée 2026)
 🔍 En recherche d'alternance en cybersécurité (SOC / BlueTeam / SecOps)
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Samsidine%20Touré-blue?style=flat-square&logo=linkedin)](https://linkedin.com/in/samsidine-touré-1b2a6a284)
-[![GitHub](https://img.shields.io/badge/GitHub-Sam-Radji-black?style=flat-square&logo=github)](https://github.com/Sam-Radji)
+[![GitHub](https://img.shields.io/badge/GitHub-Sam__Radji-black?style=flat-square&logo=github)](https://github.com/Sam-Radji)
