@@ -233,7 +233,7 @@ soc-nextgen/
 
 ```bash
 # 1. Cloner le dépôt
-git clone https://github.com/TON_USERNAME/soc-nextgen.git
+git clone https://github.com/Sam-Radji/soc-nextgen.git
 cd soc-nextgen
 
 # 2. Déployer la VM SOC Platform (TheHive + Cortex + n8n)
