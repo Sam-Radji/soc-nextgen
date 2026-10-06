@@ -1,0 +1,184 @@
+<!-- ============================================================
+     Règles Wazuh personnalisées — SOC NextGen
+     IDs : 100001 à 100031
+     ============================================================ -->
+<group name="local,soc-nextgen,">
+
+  <!-- ============================
+       AUTHENTIFICATION
+       ============================ -->
+
+  <!-- Brute Force SSH -->
+  <rule id="100030" level="12" frequency="5" timeframe="60">
+    <if_matched_sid>5760</if_matched_sid>
+    <same_source_ip />
+    <description>Brute Force SSH détecté depuis la même IP</description>
+    <group>authentication_failures,brute_force,</group>
+  </rule>
+
+  <!-- Brute Force RDP -->
+  <rule id="100031" level="12" frequency="5" timeframe="60">
+    <if_matched_sid>60106</if_matched_sid>
+    <same_source_ip />
+    <description>Brute Force RDP détecté depuis la même IP</description>
+    <group>authentication_failures,brute_force,windows,</group>
+  </rule>
+
+  <!-- Échec connexion SSH répété -->
+  <rule id="100001" level="7">
+    <if_sid>5760</if_sid>
+    <description>Échec d'authentification SSH</description>
+    <group>authentication_failed,</group>
+  </rule>
+
+  <!-- ============================
+       ACTIVE DIRECTORY
+       ============================ -->
+
+  <!-- Création de compte (Event 4720) -->
+  <rule id="100003" level="10">
+    <if_sid>60105</if_sid>
+    <field name="win.system.eventID">4720</field>
+    <description>Création d'un compte utilisateur AD</description>
+    <group>windows,active_directory,account_changes,</group>
+  </rule>
+
+  <!-- Ajout à un groupe privilégié (Event 4728) -->
+  <rule id="100005" level="12">
+    <if_sid>60105</if_sid>
+    <field name="win.system.eventID">4728</field>
+    <description>Ajout d'un membre à un groupe de sécurité AD</description>
+    <group>windows,active_directory,group_changes,</group>
+  </rule>
+
+  <!-- Verrouillage de compte (Event 4740) -->
+  <rule id="100006" level="10">
+    <if_sid>60105</if_sid>
+    <field name="win.system.eventID">4740</field>
+    <description>Compte utilisateur verrouillé</description>
+    <group>windows,active_directory,account_locked,</group>
+  </rule>
+
+  <!-- Modification objet AD (Event 5136) -->
+  <rule id="100007" level="8">
+    <if_sid>60105</if_sid>
+    <field name="win.system.eventID">5136</field>
+    <description>Modification d'un objet Active Directory</description>
+    <group>windows,active_directory,</group>
+  </rule>
+
+  <!-- ============================
+       SCAN ET RECONNAISSANCE
+       ============================ -->
+
+  <!-- Scan de ports détecté -->
+  <rule id="100012" level="10">
+    <if_sid>40101</if_sid>
+    <description>Scan de ports détecté</description>
+    <group>network,scan,</group>
+  </rule>
+
+  <!-- Scan web (nikto/gobuster) -->
+  <rule id="100013" level="9">
+    <if_sid>31101</if_sid>
+    <match>nikto|gobuster|dirbuster|sqlmap</match>
+    <description>Outil de scan web détecté dans les logs Apache</description>
+    <group>web,scan,attack,</group>
+  </rule>
+
+  <!-- ============================
+       ATTAQUES WEB
+       ============================ -->
+
+  <!-- Injection SQL -->
+  <rule id="100010" level="12">
+    <if_sid>31101</if_sid>
+    <match>select|union|insert|drop|--|xp_</match>
+    <description>Tentative d'injection SQL détectée</description>
+    <group>web,attack,sql_injection,</group>
+  </rule>
+
+  <!-- XSS -->
+  <rule id="100011" level="10">
+    <if_sid>31101</if_sid>
+    <match>&lt;script|javascript:|onerror=|onload=</match>
+    <description>Tentative XSS détectée dans les logs Apache</description>
+    <group>web,attack,xss,</group>
+  </rule>
+
+  <!-- LFI/RFI -->
+  <rule id="100014" level="10">
+    <if_sid>31101</if_sid>
+    <match>../|etc/passwd|/proc/|php://</match>
+    <description>Tentative LFI/RFI détectée</description>
+    <group>web,attack,lfi,</group>
+  </rule>
+
+  <!-- ============================
+       FILE INTEGRITY MONITORING
+       ============================ -->
+
+  <!-- Modification fichier web -->
+  <rule id="100020" level="12">
+    <if_sid>550</if_sid>
+    <field name="file">/var/www/html</field>
+    <description>Modification d'un fichier web détectée (FIM)</description>
+    <group>fim,web,</group>
+  </rule>
+
+  <!-- Modification config Apache -->
+  <rule id="100021" level="10">
+    <if_sid>550</if_sid>
+    <field name="file">/etc/apache2</field>
+    <description>Modification de la configuration Apache (FIM)</description>
+    <group>fim,apache,</group>
+  </rule>
+
+  <!-- Modification SYSVOL -->
+  <rule id="100022" level="10">
+    <if_sid>550</if_sid>
+    <field name="file">SYSVOL</field>
+    <description>Modification du SYSVOL détectée (FIM)</description>
+    <group>fim,windows,active_directory,</group>
+  </rule>
+
+  <!-- ============================
+       OUTILS OFFENSIFS / MALWARE
+       ============================ -->
+
+  <!-- Mimikatz -->
+  <rule id="100025" level="15">
+    <if_sid>92200</if_sid>
+    <match>mimikatz|sekurlsa|lsadump</match>
+    <description>Outil Mimikatz détecté sur le système</description>
+    <group>windows,malware,credential_theft,</group>
+  </rule>
+
+  <!-- PowerShell encodé -->
+  <rule id="100026" level="12">
+    <if_sid>92200</if_sid>
+    <match>-EncodedCommand|-enc |FromBase64String</match>
+    <description>Exécution PowerShell encodé suspecte</description>
+    <group>windows,powershell,obfuscation,</group>
+  </rule>
+
+  <!-- ============================
+       RÉSEAU
+       ============================ -->
+
+  <!-- Connexion entrante suspecte -->
+  <rule id="100015" level="8">
+    <if_sid>4100</if_sid>
+    <description>Connexion réseau entrante suspecte</description>
+    <group>network,</group>
+  </rule>
+
+  <!-- DoS/Flood -->
+  <rule id="100016" level="10" frequency="100" timeframe="10">
+    <if_matched_sid>4100</if_matched_sid>
+    <same_source_ip />
+    <description>Possible attaque DoS/Flood détectée</description>
+    <group>network,dos,</group>
+  </rule>
+
+</group>

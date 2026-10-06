@@ -1,0 +1,14 @@
+[Unit]
+Description=Wazuh to TheHive Bridge — SOC NextGen
+After=network.target
+
+[Service]
+Type=simple
+User=soc_st
+WorkingDirectory=/soc-platform
+ExecStart=/soc-platform/venv/bin/python3 /soc-platform/wazuh_to_thehive.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

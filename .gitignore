@@ -1,0 +1,36 @@
+# Secrets et credentials — NE JAMAIS committer
+*.env
+.env*
+secrets.yml
+credentials.json
+api-keys.txt
+
+# Fichiers sensibles Cortex
+cortex/analyzers.json
+
+# Logs
+*.log
+logs/
+
+# Sauvegardes Proxmox
+*.vma
+*.vma.zst
+*.tar.zst
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Éditeurs
+.vscode/
+.idea/
+*.swp
+*.swo
